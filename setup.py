@@ -9,9 +9,7 @@ from setuptools import setup
 
 APP = ['MyWeather.py']
 DATA_FILES = []
-OPTIONS = {'argv_emulation': True,
-           'includes': ['BeautifulSoup', 'Tkinter', 'urllib2']
-          }
+OPTIONS = {'argv_emulation': True, 'iconfile': '/Users/james/MyWeather/icon/Cover.icns'}
 
 setup(
     app=APP,

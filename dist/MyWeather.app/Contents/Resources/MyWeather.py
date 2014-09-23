@@ -4,6 +4,7 @@
 import urllib2
 import BeautifulSoup
 import Tkinter
+import sys
 
 class Weather():
   def __init__(self, day, date, weather, maxdegree, mindegree):
@@ -24,7 +25,15 @@ def getWeathers():
   weathers = []
 
   url = 'http://www.weather.com.cn/weather1d/101220101.shtml'
-  fd = urllib2.urlopen(url)
+  try:
+
+    fd = urllib2.urlopen(url, timeout = 5)
+
+  except urllib2.URLError:
+
+    print "请检查网络连接"
+    sys.exit(1)
+    
   html = fd.read()
 
   soup = BeautifulSoup.BeautifulSoup(html)
