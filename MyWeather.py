@@ -52,10 +52,10 @@ def getWeathers():
   for degree in content.findAll('span'):
     if degree.string != None:
       if sign == 0:
-        maxdegree.append(degree.string)
+        mindegree.append(degree.string)
         sign = 1
       elif sign == 1:
-        mindegree.append(degree.string)
+        maxdegree.append(degree.string)
         sign = 0
 
   for dayname, datename, weathername, maxdegreename, mindegreename in zip(day, date, weather, maxdegree, mindegree):
