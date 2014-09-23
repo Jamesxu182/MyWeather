@@ -33,7 +33,7 @@ def getWeathers():
 
     print "请检查网络连接"
     sys.exit(1)
-    
+
   html = fd.read()
 
   soup = BeautifulSoup.BeautifulSoup(html)
@@ -67,12 +67,16 @@ def getWeathers():
 if __name__ == '__main__':
 
   top = Tkinter.Tk(screenName = 'Weather', className = 'Weather')
+  today = Tkinter.Frame()
+  feture = Tkinter.Frame()
 
   weathers = getWeathers()
 
-  Tkinter.Label(top, text = weathers[0].message, bg = 'black', fg = 'red', justify = 'left').pack()
+  Tkinter.Label(today, text = weathers[0].message, bg = 'black', fg = 'red', justify = 'left').pack(fill=Tkinter.X)
+  today.pack(fill=Tkinter.X)
 
   for wea in weathers[1:]:
-    Tkinter.Label(top, text = wea.message, justify = 'left').pack()
+    Tkinter.Label(feture, text = wea.message, justify = 'left').pack(fill=Tkinter.X)
+    feture.pack(fill=Tkinter.X)
 
   top.mainloop()
