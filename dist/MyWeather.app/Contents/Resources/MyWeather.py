@@ -66,11 +66,11 @@ def getWeathers():
 
 if __name__ == '__main__':
 
+  weathers = getWeathers()
+
   top = Tkinter.Tk(screenName = 'Weather', className = 'Weather')
   today = Tkinter.Frame()
   feture = Tkinter.Frame()
-
-  weathers = getWeathers()
 
   Tkinter.Label(today, text = weathers[0].message, bg = 'black', fg = 'red', justify = 'left', anchor = 'w').pack(fill=Tkinter.X)
   today.pack(fill=Tkinter.X)
