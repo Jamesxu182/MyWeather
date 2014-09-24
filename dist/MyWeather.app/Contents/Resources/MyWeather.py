@@ -8,12 +8,12 @@ import sys
 
 class Weather():
   def __init__(self, day, date, weather, maxdegree, mindegree):
-    self.day = day
-    self.date = date
-    self.weather = weather
-    self.maxdegree = maxdegree
-    self.mindegree = mindegree
-    self.message = str(self.day) + ' ' + str(self.date) + ' ' + str(self.weather) + ' ' + str(self.mindegree) + '度 ~ ' + str(self.maxdegree) + '度'
+    self.day = str(day)
+    self.date = str(date).strip('日')
+    self.weather = str(weather)
+    self.maxdegree = str(maxdegree)
+    self.mindegree = str(mindegree)
+    self.message = self.day + '\t' + self.date + '日\t' + self.weather + (25 - len(self.weather)) * ' ' + self.mindegree + '度 ~ ' + self.maxdegree + '度'
 
 def getWeathers():
 
@@ -72,11 +72,11 @@ if __name__ == '__main__':
 
   weathers = getWeathers()
 
-  Tkinter.Label(today, text = weathers[0].message, bg = 'black', fg = 'red', justify = 'left').pack(fill=Tkinter.X)
+  Tkinter.Label(today, text = weathers[0].message, bg = 'black', fg = 'red', justify = 'left', anchor = 'w').pack(fill=Tkinter.X)
   today.pack(fill=Tkinter.X)
 
   for wea in weathers[1:]:
-    Tkinter.Label(feture, text = wea.message, justify = 'left').pack(fill=Tkinter.X)
+    Tkinter.Label(feture, text = wea.message, justify = 'left', anchor = 'w').pack(fill=Tkinter.X)
     feture.pack(fill=Tkinter.X)
 
   top.mainloop()

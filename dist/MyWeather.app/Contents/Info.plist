@@ -22,7 +22,7 @@
 	<key>CFBundleExecutable</key>
 	<string>MyWeather</string>
 	<key>CFBundleIconFile</key>
-	<string>Cover.icns</string>
+	<string>app.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.pythonmac.unspecified.MyWeather</string>
 	<key>CFBundleInfoDictionaryVersion</key>
