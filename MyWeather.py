@@ -34,7 +34,7 @@ def checkUpdate():
       weathers.append(Weather(day, date, weather, maxdegree, mindegree))
 
     if int(weathers[0].date) != nowday:
-      weathers.clear()
+      weathers = []
       weathers = getWeathers()
 
   else:
