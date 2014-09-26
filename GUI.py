@@ -10,8 +10,15 @@ def GUI():
   #getWeathers.getWeathersFromInternet()
 
   app = Tkinter.Tk(screenName = 'Weather', className = 'Weather')
-  today = Tkinter.LabelFrame(app, text = 'Today Weather of Hefei')
-  feture = Tkinter.LabelFrame(app, text = 'Feture Weatehr of Hefei')
+  top = Tkinter.LabelFrame(app, text = 'Please type the city you are living in', padx = 5, pady = 5)
+  today = Tkinter.LabelFrame(app, text = 'Today Weather of Hefei', padx = 5, pady = 5)
+  feture = Tkinter.LabelFrame(app, text = 'Feture Weatehr of Hefei', padx = 5, pady = 5)
+
+  entry = Tkinter.Entry(top, width = 30)
+  button = Tkinter.Button(top, text='Submit')
+  entry.grid(row = 0, column = 0)
+  button.grid(row = 0, column = 1)
+  top.pack(fill=Tkinter.X)
 
   Tkinter.Label(today, text = getWeathers.weathers[0].message, bg = 'black', fg = 'red', justify = 'left', anchor = 'w').pack(fill=Tkinter.X)
   today.pack(fill=Tkinter.X)
