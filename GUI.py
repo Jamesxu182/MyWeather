@@ -55,6 +55,7 @@ class Content(Frame):
 
 def GUI():
   root = Tk(className="MyWeather")
+  root.resizable(False, False)
   content = Content(root)
   top = Top(root, content)
   top.pack()
