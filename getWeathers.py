@@ -2,12 +2,12 @@
 #-*- coding: utf-8 -*-
 
 import os.path
+import urllib
 import urllib2
 import time
 import sys
 import BeautifulSoup
-
-weathers = []
+import re
 
 #define a Weather class, including message about weather
 class Weather():
@@ -20,15 +20,22 @@ class Weather():
     self.message = self.day + '\t' + self.date + '日\t' + self.weather + (25 - len(self.weather)) * ' ' + self.mindegree + '度 ~ ' + self.maxdegree + '度'
 
 #get Weather information from internet
-def getWeathersFromInternet():
+def getCity():
+  if os.path.isfile('data.txt'):
+    city = open('data.txt').readline().strip('\n').strip()
+  else:
+    city = 'Shanghai'
+  return city
+
+def getWeathersFromInternet(url):
 
   day = []
   date = []
   weather = []
   maxdegree = []
   mindegree = []
+  weathers = []
 
-  url = 'http://www.weather.com.cn/weather1d/101220101.shtml'
   try:
 
     fd = urllib2.urlopen(url, timeout = 5)
@@ -68,43 +75,34 @@ def getWeathersFromInternet():
 
   return weathers
 
-#get Weather message from cache file
-def getWeathersFromFile():
+def getURL(cityname):
 
-  file = open('data.txt')
+  url = 'http://toy1.weather.com.cn/search?cityname=' + urllib.quote(cityname) + '&callback=jQuery182005500786968241289_1411741793130'
 
-  for i in range(6):
-    day = file.readline().strip('\n').strip()
-    date = file.readline().strip('\n').strip()
-    weather = file.readline().strip('\n').strip()
-    maxdegree = file.readline().strip('\n').strip()
-    mindegree = file.readline().strip('\n').strip()
-    weathers.append(Weather(day, date, weather, maxdegree, mindegree))
+  data = {
+    'GET': 'url',
+    'Host':	'toy1.weather.com.cn',
+    'User-Agent': 	'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',
+    'Accept':	'*/*',
+    'Accept-Language':	'zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3',
+    'Accept-Encoding': 'gzip, deflate',
+    'Referer': 'http://www.weather.com.cn/',
+    'Connection': 'keep-alive'
+    }
 
-  return weathers
-  
-#judge the weather from internet or cache file
-def judgeMessageSource():
+  request = urllib2.Request(url, headers = data)
+  response = urllib2.urlopen(request).read()
+  ss = re.findall('\"ref\":\"(.*?)\"', response)
 
-    nowday = time.localtime().tm_mday
+  for item in ss:
+    if '~' + cityname + '~' in item:
+      code = item.split('~')[0]
+      break
 
-    if os.path.isfile('data.txt'):
-      weathers = getWeathersFromFile()
-
-      if int(weathers[0].date) != nowday:
-        weathers = []
-        weahters = getWeathersFromInternet()
-
-    else:
-      weathers = getWeathersFromInternet()
+  return 'http://www.weather.com.cn/weather1d/' + code + '.shtml'
 
 #update data of the cache file
-def saveWeathers():
-
+def saveWeathers(city):
   file = open('data.txt', 'w')
-  for wea in weathers:
-    file.write(wea.day + '\n')
-    file.write(wea.date + '\n')
-    file.write(wea.weather + '\n')
-    file.write(wea.maxdegree + '\n')
-    file.write(wea.mindegree + '\n')
+  file.write(city)
+  file.close()
