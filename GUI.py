@@ -19,6 +19,7 @@ class Top(Frame):
     self.e.set(self.cityname)
     self.entry = Entry(self.top, width=29, textvariable=self.e)
     self.submit = Button(self.top, text = "submit", command=self.submit)
+    #self.submit.bind("<Enter>", self.submit)
     self.entry.pack(side="left")
     self.submit.pack(side="right")
     self.top.pack()
