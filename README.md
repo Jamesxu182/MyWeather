@@ -1,7 +1,7 @@
 MyWeather
 =========
 
-A Simple Weather App For China
+A Simple Weather App For The City Of China.
 
 The Application Wroten by James in Python. The data from http://www.weather.com.cn.
 
@@ -15,7 +15,7 @@ Thanks For Data From Weather.com.cn,
 Thanks For The Third-Part Library namely BeautifulSoup To Parse The HTML Document 
 And Thanks For Python Community To Program.
 
-USAGING:
+USAGE:
 
 The Main File Is Called 'MyWeather.py', Change Directory To The Directory And Type 'python MyWeather.py' In Terminal To Run The Program.
 
