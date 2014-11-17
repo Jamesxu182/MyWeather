@@ -11,7 +11,7 @@ import re
 
 #define a Weather class, including message about weather
 class Weather():
-  def __init__(self, day, date, weather, maxdegree, mindegree):
+  def __init__(self, day = '  ', date = '  ', weather = '    ', maxdegree = '  ', mindegree = '  '):
     self.day = str(day)
     self.date = str(date).strip('日')
     self.weather = str(weather)
@@ -19,14 +19,17 @@ class Weather():
     self.mindegree = str(mindegree)
     self.message = self.day + '\t' + self.date + '日\t' + self.weather + (25 - len(self.weather)) * ' ' + self.mindegree + '度 ~ ' + self.maxdegree + '度'
 
-#get Weather information from internet
+#getCity name from local file, else set city name is default 'Hefei'
 def getCity():
   if os.path.isfile('data.txt'):
     city = open('data.txt').readline().strip('\n').strip()
   else:
-    city = 'Shanghai'
+    city = 'Hefei'
   return city
 
+#get Weather information from internet
+#if there isn't Internet Connect, it will raise error
+#if there is Internet Connect, function will return array of class Weather which get message from internet
 def getWeathersFromInternet(url):
 
   day = []
@@ -75,6 +78,8 @@ def getWeathersFromInternet(url):
 
   return weathers
 
+#encode the cityname and put it into url, and request the recievement.
+#analyze the recievement, get the new url, and return the new url.
 def getURL(cityname):
 
   url = 'http://toy1.weather.com.cn/search?cityname=' + urllib.quote(cityname) + '&callback=jQuery182005500786968241289_1411741793130'
@@ -102,6 +107,7 @@ def getURL(cityname):
   return 'http://www.weather.com.cn/weather1d/' + code + '.shtml'
 
 #update data of the cache file
+#store the name of city into local filename namely 'data.txt'
 def saveWeathers(city):
   file = open('data.txt', 'w')
   file.write(city)

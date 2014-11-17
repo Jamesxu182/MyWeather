@@ -1,9 +1,11 @@
 #!/usr/bin/python
-#-*- coding : utf-8 -*-
+#-*- coding: utf-8 -*-
 
 from Tkinter import *
 import getWeathers
-
+import urllib2
+import socket
+from SimpleDialog import *
 
 class Top(Frame):
 
@@ -11,6 +13,7 @@ class Top(Frame):
     Frame.__init__(self, master)
     self.createWidget()
     self.content = content
+    self.master = master
 
   def createWidget(self):
     self.cityname = getWeathers.getCity()
@@ -25,8 +28,13 @@ class Top(Frame):
     self.top.pack()
 
   def submit(self):
+    self.lastcityname = self.cityname
     self.cityname = self.entry.get().capitalize()
-    self.url = getWeathers.getURL(self.cityname)
+    try:
+      self.url = getWeathers.getURL(self.cityname)
+    except UnboundLocalError:
+        SimpleDialog(self.master, text = 'The city is not exist!', buttons = ['OK'], default = 0)
+        self.cityname = self.lastcityname
     self.weathers = getWeathers.getWeathersFromInternet(getWeathers.getURL(self.cityname))
 
     for i, wea in enumerate(self.weathers[0:7], start=0):
@@ -38,21 +46,31 @@ class Content(Frame):
     self.createWidget()
 
   def createWidget(self):
-    self.url = getWeathers.getURL(getWeathers.getCity())
-    self.weathers = getWeathers.getWeathersFromInternet(self.url)
+    self.labels = [];
     self.today = LabelFrame(self, text = 'Today Weather', padx = 5, pady = 5)
     self.feture = LabelFrame(self, text = 'Feture Weather', padx = 5, pady = 5)
+    self.weathers = [getWeathers.Weather()] * 7
 
-    self.labels = []
     self.labels.append(Label(self.today, text = self.weathers[0].message, justify = 'left', anchor = 'w', fg = 'red'))
     self.labels[0].pack(fill=X)
 
-    for i, wea in enumerate(self.weathers[1:7], start = 1):
+    for i in range(1, 6):
       self.labels.append(Label(self.feture, text = self.weathers[i].message, justify = 'left', anchor = 'w'))
       self.labels[i].pack(fill=X)
 
     self.today.pack()
     self.feture.pack()
+
+  def initWeathers(self, master):
+    try:
+      self.weathers = getWeathers.getWeathersFromInternet(getWeathers.getURL(getWeathers.getCity()));
+    except urllib2.URLError:
+      SimpleDialog(master, text = 'Please check connect!', buttons = ['OK'], default = 0)
+    except socket.timeout:
+      SimpleDialog(master, text = 'Please check connect!', buttons = ['OK'], default = 0)
+
+    for i, wea in enumerate(self.weathers):
+      self.labels[i]['text'] = wea.message
 
 def GUI():
   root = Tk(className="MyWeather")
@@ -61,5 +79,6 @@ def GUI():
   top = Top(root, content)
   top.pack()
   content.pack()
+  content.initWeathers(root)
   root.mainloop()
   getWeathers.saveWeathers(top.cityname)
