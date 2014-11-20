@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+import sys
 import getWeathers
 from reportlab.graphics.shapes import *
 from reportlab.graphics.charts.lineplots import LinePlot
 from reportlab.graphics.charts.textlabels import Label
 from reportlab.graphics import renderPDF
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.pdfgen import canvas
 
 dates = []
 maxdegrees = []
 mindegrees = []
 datas = []
-weathers = getWeathers.getWeathersFromInternet()
+weathers = getWeathers.getWeathersFromInternet(getWeathers.getURL(getWeathers.getCity()))
 
 for wea in weathers:
   dates.append(int(wea.date))
@@ -20,7 +24,7 @@ for wea in weathers:
 
 datas = [zip(dates, maxdegrees), zip(dates, mindegrees)]
 
-drawing = Drawing(400, 200)
+drawing = Drawing(200, 400)
 
 lp = LinePlot()
 lp.x = 50
@@ -35,5 +39,3 @@ drawing.add(lp)
 drawing.add(String(160, 10, 'Weather Chart', fontSize=14, fillColor=colors.black))
 
 renderPDF.drawToFile(drawing, 'MyWeather.pdf', 'MyWeather')
-
-print 'done!'

@@ -19,13 +19,17 @@ class Weather():
     self.mindegree = str(mindegree)
     self.message = self.day + '\t' + self.date + '日\t' + self.weather + (25 - len(self.weather)) * ' ' + self.mindegree + '度 ~ ' + self.maxdegree + '度'
 
-#getCity name from local file, else set city name is default 'Hefei'
+#get city name from local file, else set city name is default 'Hefei'
 def getCity():
   if os.path.isfile('data.txt'):
+  #judge whether exist the file namely 'data.txt'
     city = open('data.txt').readline().strip('\n').strip()
+    #if there is a file namely 'data.txt', open the file and read the name of city
   else:
     city = 'Hefei'
+    #if there is not the file namely 'data.txt', set the variable default as string of 'Hefei'
   return city
+  #return the name of city as type of string
 
 #get Weather information from internet
 #if there isn't Internet Connect, it will raise error
@@ -33,34 +37,40 @@ def getCity():
 def getWeathersFromInternet(url):
 
   day = []
+  #define list to store day message
   date = []
+  #define list to store date message
   weather = []
+  #define list to store weather message
   maxdegree = []
+  #define list to store maxdegree message
   mindegree = []
+  #define list to store minidegree message
   weathers = []
+  #define list to store array of class Weather object
 
-  try:
-
-    fd = urllib2.urlopen(url, timeout = 5)
-
-  except urllib2.URLError:
-
-    print "请检查网络连接"
-    sys.exit(1)
+  fd = urllib2.urlopen(url, timeout = 5)
+  #download the page from url, and set timeout equal 5
 
   html = fd.read()
+  #html which is type of string includes the content of page
 
   soup = BeautifulSoup.BeautifulSoup(html)
+  #build a class called BeatifulSoup, through this class to deal with HTML
   content = soup.find(id = '7d')
+  #find the DOM structure whose id equal '7d'
   #print soup.find(id='7d').prettify()
   for daytag in content.findAll('h1'):
     day.append(daytag.string)
+  #get all tag called 'h1', get the content between tags and add to the list of day
 
   for datetag in content.findAll('h2'):
     date.append(datetag.string)
+  #get all tag called 'h2', get the content between tags and add to the list of date
 
   for weathertag in content.findAll('p', 'wea'):
     weather.append(weathertag.string)
+  #get all tag called 'p' and di = 'wea', get the content between tags and add to the list of date
 
   sign = 0
   for degree in content.findAll('span'):
@@ -71,19 +81,23 @@ def getWeathersFromInternet(url):
       elif sign == 1:
         maxdegree.append(degree.string)
         sign = 0
+  #get the maxdegree and mindegree and store to array of mindegree and array of maxdegree
 
   for dayname, datename, weathername, maxdegreename, mindegreename in zip(day, date, weather, maxdegree, mindegree):
-    #print dayname, datename, weathername,  mindegreename, '度 ~', maxdegreename, '度'
     weathers.append(Weather(dayname, datename, weathername, maxdegreename, mindegreename))
+  #put all message store into the array of Weathers consisted by class Weather
 
   return weathers
+  #return the array of class weathers
 
 #encode the cityname and put it into url, and request the recievement.
 #analyze the recievement, get the new url, and return the new url.
 def getURL(cityname):
 
   url = 'http://toy1.weather.com.cn/search?cityname=' + urllib.quote(cityname) + '&callback=jQuery182005500786968241289_1411741793130'
+  #encode the city name and add into the url
 
+  #define headers message as type dict namely date
   data = {
     'GET': 'url',
     'Host':	'toy1.weather.com.cn',
@@ -96,15 +110,22 @@ def getURL(cityname):
     }
 
   request = urllib2.Request(url, headers = data)
-  response = urllib2.urlopen(request).read()
+  #build the request
+  response = urllib2.urlopen(request, timeout=5).read()
+  #get the content of page as type of string
+  #the content include the code of the city you want to search
+
   ss = re.findall('\"ref\":\"(.*?)\"', response)
+  #use re to get all code and store into list of ss
 
   for item in ss:
     if '~' + cityname + '~' in item:
       code = item.split('~')[0]
       break
+  #get the code of the city directly
 
   return 'http://www.weather.com.cn/weather1d/' + code + '.shtml'
+  #return the url of the city you want to search
 
 #update data of the cache file
 #store the name of city into local filename namely 'data.txt'
