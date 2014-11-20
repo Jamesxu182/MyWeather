@@ -9,7 +9,7 @@ You Can Search The Weather Of The City What You Want to Know
 
 Shotscreen:
 
-![image](https://raw.githubusercontent.com/Jamesxu182/MyWeather/master/Interface/Interface.png)
+![image](https://raw.githubusercontent.com/Jamesxu182/MyWeather/master/ScreenShot/ScreenShot.png)
 
 Thanks For Data From Weather.com.cn, 
 Thanks For The Third-Part Library namely BeautifulSoup To Parse The HTML Document 
