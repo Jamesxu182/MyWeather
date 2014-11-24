@@ -1,33 +1,135 @@
 #!/usr/bin/env python
-#-*- coding: utf-8 -*-
-
-import os.path
-import urllib
+# -*- coding: utf-8 -*-
 import urllib2
-import time
-import sys
-import BeautifulSoup
-import re
+import urllib
+import json
+import os
+
 
 class Weather():
-  def __init__(self, day = '  ', date = '  ', weather = '    ', maxdegree = '  ', mindegree = '  '):
-    self.day = str(day)
-    self.date = str(date).strip('日')
-    self.weather = str(weather)
-    self.maxdegree = str(maxdegree)
-    self.mindegree = str(mindegree)
-    self.message = self.day + '\t' + self.date + '日\t' + self.weather + (15 - (len(self.weather) / 3)) * ' ' + self.mindegree + '度 ~ ' + self.maxdegree + '度'
 
+  def __init__(self, d = {'day': ' ', 'date': ' ', 'code': '3200', 'high': '32', 'low': '32'}):
+     self.day = d['day']
+     self.date = d['date']
+     self.code = d['code']
+     self.weather = Weather.turnCode(self.code)
+     self.maxdegree = d['high']
+     self.mindegree = d['low']
+     self.message = self.day + '\t' + self.date + '\t' + self.weather + (3 - (len(self.weather) / 8)) * '\t' + self.mindegree + 'C~' + self.maxdegree + 'C'
+
+  def getDateMessage(self):
+      return self.day + '\t' + self.date
+
+  def getWeatherMessage(self):
+      return self.weather + (25 - (len(self.weather))) * ' ' + self.mindegree + 'C~' + self.maxdegree + 'C'
+
+  @classmethod
+  def turnCode(cls, code):
+      if code == '0':
+          return 'tornado'
+      elif code == '1':
+           return 'weathertropical_storm'
+      elif code == '2':
+           return 'hurricane'
+      elif code == '3':
+          return 'severe_thunderstorms'
+      elif code == '4':
+          return 'thunderstorms'
+      elif code == '5':
+          return 'mixed_rain_and_snow'
+      elif code == '6':
+          return 'mixed_rain_and_sleet'
+      elif code == '7':
+          return 'mixed_snow_and_sleet'
+      elif code == '8':
+          return 'freezing_drizzle'
+      elif code == '9':
+          return 'drizzle'
+      elif code == '10':
+          return 'freezing_rain'
+      elif code == '11':
+          return 'showers'
+      elif code == '12':
+          return 'showers'
+      elif code == '13':
+           return 'snow_flurries'
+      elif code == '14':
+           return 'light_snow_showers'
+      elif code == '15':
+           return 'blowing_snow'
+      elif code == '16':
+           return 'snow'
+      elif code == '17':
+           return 'hail'
+      elif code == '18':
+           return 'sleet'
+      elif code == '19':
+           return 'dust'
+      elif code == '20':
+           return 'foggy'
+      elif code == '21':
+           return 'haze'
+      elif code == '22':
+           return 'smoky'
+      elif code == '23':
+           return 'blustery'
+      elif code == '24':
+           return 'windy'
+      elif code == '25':
+           return 'cold'
+      elif code == '26':
+           return 'cloudy'
+      elif code == '27':
+          return 'mostly_cloudy'
+      elif code == '28':
+          return 'mostly_cloudy'
+      elif code == '29':
+          return 'partly_cloudy'
+      elif code == '30':
+           return 'partly_cloudy'
+      elif code == '31':
+           return 'clear'
+      elif code == '32':
+          return 'sunny'
+      elif code == '33':
+           return 'fair'
+      elif code == '34':
+          return 'fair'
+      elif code == '35':
+           return 'mixed_rain_and_hail'
+      elif code == '36':
+          return 'hot'
+      elif code == '37':
+           return 'isolated_thunderstorms'
+      elif code == '38':
+           return 'scattered_thunderstorms'
+      elif code == '39':
+           return 'scattered_thunderstorms'
+      elif code == '40':
+          return 'scattered_showers'
+      elif code == '41':
+          return 'heavy_snow'
+      elif code == '42':
+          return 'scattered_snow_showers'
+      elif code == '43':
+          return 'heavy_snow'
+      elif code == '44':
+          return 'partly_cloudy'
+      elif code == '45':
+          return 'thundershowers'
+      elif code == '46':
+          return 'snow_showers'
+      elif code == '47':
+           return 'isolated_thundershowers'
+      elif code == '3200':
+           return 'not_available'
 
 class Weathers(list):
     def __init__(self, iterable=[]):
         list.__init__(self, iterable)
-        for i in range(6):
+        for i in range(5):
             self.append(Weather())
 
-    #get Weather information from internet
-    #if there isn't Internet Connect, it will raise error
-     #if there is Internet Connect, function will return array of class Weather which get message from internet
     def setWeathersFromInternet(self):
 
         self.day = []
@@ -43,52 +145,20 @@ class Weathers(list):
         weathers = []
         #define list to store array of class Weather object
 
-        fd = urllib2.urlopen(self.url, timeout = 10)
-        #download the page from url, and set timeout equal 5
+        result = urllib2.urlopen(self.url).read()
+        data = json.loads(result)
+        weathers = list(data['query']['results']['channel']['item']['forecast'])
 
-        html = fd.read()
-        #html which is type of string includes the content of page
-
-        soup = BeautifulSoup.BeautifulSoup(html)
-        #build a class called BeatifulSoup, through this class to deal with HTML
-        content = soup.find(id = '7d')
-        #find the DOM structure whose id equal '7d'
-        #print soup.find(id='7d').prettify()
-        for daytag in content.findAll('h1'):
-          self.day.append(daytag.string)
-        #get all tag called 'h1', get the content between tags and add to the list of day
-
-        for datetag in content.findAll('h2'):
-          self.date.append(datetag.string)
-        #get all tag called 'h2', get the content between tags and add to the list of date
-
-        for weathertag in content.findAll('p', 'wea'):
-          self.weather.append(weathertag.string)
-        #get all tag called 'p' and di = 'wea', get the content between tags and add to the list of date
-
-        sign = 0
-        for degree in content.findAll('span'):
-          if degree.string != None:
-            if sign == 0:
-              t1 = degree.string
-              sign = 1
-            elif sign == 1:
-              t2 = degree.string
-              sign = 0
-              if int(t1) > int(t2):
-                self.maxdegree.append(int(t1))
-                self.mindegree.append(int(t2))
-              else:
-                self.maxdegree.append(int(t2))
-                self.mindegree.append(int(t1))
-        #get the maxdegree and mindegree and store to array of mindegree and array of maxdegree
-
-        for dayname, datename, weathername, maxdegreename, mindegreename in zip(self.day, self.date, self.weather, self.maxdegree, self.mindegree):
-          weathers.append(Weather(dayname, datename, weathername, maxdegreename, mindegreename))
-        #put all message store into the array of Weathers consisted by class Weather
-
-        for i, wea in enumerate(weathers[0:6]):
-            self[i] = wea
+        for i, wea in enumerate(weathers):
+            self.day.append(wea['day'])
+            wea['date'] = wea['date'].split()[0]
+            self.date.append(wea['date'])
+            self.weather.append(wea['code'])
+            wea['high'] = str((int(wea['high']) - 32) * 5 / 9)
+            wea['low'] = self[i].mindegree = str((int(wea['low']) - 32) * 5 / 9)
+            self.maxdegree.append(int(wea['high']))
+            self.mindegree.append(int(wea['low']))
+            self[i] = Weather(wea)
 
     def setDefaultCity(self):
       if os.path.isfile('data.txt'):
@@ -103,52 +173,26 @@ class Weathers(list):
       self.city = cityname
 
     def setURL(self):
+        baseurl = "https://query.yahooapis.com/v1/public/yql?"
+        yql_query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + self.city + "')"
+        yql_url = baseurl + urllib.urlencode({'q':yql_query}) + "&format=json"
 
-      url = 'http://toy1.weather.com.cn/search?cityname=' + urllib.quote(self.city) + '&callback=jQuery182005500786968241289_1411741793130'
-      #encode the city name and add into the url
-
-      #define headers message as type dict namely date
-      data = {
-        'GET': 'url',
-        'Host':	'toy1.weather.com.cn',
-        'User-Agent': 	'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',
-        'Accept':	'*/*',
-        'Accept-Language':	'zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3',
-        'Accept-Encoding': 'gzip, deflate',
-        'Referer': 'http://www.weather.com.cn/',
-        'Connection': 'keep-alive'
-        }
-
-      request = urllib2.Request(url, headers = data)
-      #build the request
-      response = urllib2.urlopen(request, timeout=10).read()
-      #get the content of page as type of string
-      #the content include the code of the city you want to search
-
-      ss = re.findall('\"ref\":\"(.*?)\"', response)
-      #use re to get all code and store into list of ss
-
-      for item in ss:
-        if '~' + self.city + '~' in item:
-          code = item.split('~')[0]
-          break
-      #get the code of the city directly
-
-      self.url = 'http://www.weather.com.cn/weather1d/' + code + '.shtml'
+        self.url = yql_url
 
     #update data of the cache file
     #store the name of city into local filename namely 'data.txt'
     def saveWeathers(self):
-      file = open('data.txt', 'w')
-      file.write(self.city)
-      file.close()
+        file = open('data.txt', 'w')
+        file.write(self.city)
+        file.close()
+
+
 
 if __name__ == '__main__':
     weathers = Weathers()
-
+    weathers.setDefaultCity()
     weathers.setCity('Hefei')
     weathers.setURL()
-    print weathers.url
     weathers.setWeathersFromInternet()
 
     for wea in weathers:
